@@ -1,0 +1,31 @@
+window.onload = function() {
+  let myBtn = document.getElementById("myButton");
+  myBtn.addEventListener("click", event => {
+    event.preventDefault();
+    let productName = document.getElementById("nameProduct");
+    let countList = document.getElementById("count");
+    console.log(productName.value, countList.value);
+    let prodName = productName.value;
+    let countProd = countList.value;
+    let btnDelete = document.createElement("button");
+    btnDelete.innerText = "usuń";
+    let btnEdit = document.createElement("button");
+    btnEdit.innerText = "edytuj";
+    let tbody = document.getElementsByTagName("tbody")[0];
+    let trow = document.createElement("tr");
+    tbody.appendChild(trow);
+    let tdata = document.createElement("td");
+    tdata.innerText = "...";
+    trow.appendChild(tdata);
+    let tdata1 = document.createElement("td");
+    tdata1.innerText = prodName;
+    trow.appendChild(tdata1);
+    let tdata2 = document.createElement("td");
+    tdata2.innerText = countProd;
+    trow.appendChild(tdata2);
+    let tdata3 = document.createElement("td");
+    tdata3.appendChild(btnDelete);
+    tdata3.appendChild(btnEdit);
+    trow.appendChild(tdata3);
+  });
+};
