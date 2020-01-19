@@ -2,8 +2,10 @@
   <head>
     <title>Lista zakupów</title>
     <link rel="stylesheet" type="text/css" href="zadanieDOM.css" />
+
     <script src="JSON.js"></script>
   </head>
+
   <body>
     <h3>Moja lista zakupów</h3>
     <form>
@@ -12,7 +14,13 @@
         type="text"
         placeholder="nazwa produktu"
       /><br /><br />
-      <input id="count" type="number" placeholder="ilość" /><br /><br />
+      <input
+        id="count"
+        type="number"
+        min="0"
+        step="1"
+        placeholder="ilość"
+      /><br /><br />
       <button id="myButton">Dodaj</button>
     </form>
     <table>
@@ -21,7 +29,7 @@
           <th>ID</th>
           <th>Nazwa produktu</th>
           <th>Ilość</th>
-          <th>Usuń</th>
+          <th>Usuń/Edytuj</th>
         </tr>
       </thead>
       <tbody></tbody>
