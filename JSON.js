@@ -1,43 +1,47 @@
 const LOCAL_STORAGE_KEY = "shoppingList";
 window.onload = function() {
-  const myItems = getElementsFromLocalStorage();
-  const myProductsTable = [];
-
-  myItems.forEach((element, index) => {
-    myProductsTable.push(element);
-    addElementToTbody(element.prodName, element.countProd, index + 1);
-  });
-  // for (let i = 0; i < myItems.length; i++) {
-  //   let element = myItems[i];
-
-  //   addElementToTbody(element.prodName, element.countProd, i + 1);
-  // }
+  let myProductsTable = [];
+  const tbody = document.getElementsByTagName("tbody")[0];
   let myBtn = document.getElementById("myButton");
+  var productName = document.getElementById("nameProduct");
+  var countValue = document.getElementById("count");
+  //zmienna do edycji elementu
+  let myEditProduct = null;
+  //dla testu
+  console.log("myProductsTable: ", myProductsTable);
+  showDataFromLocalStorage();
+
+  function showDataFromLocalStorage() {
+    clearTBody();
+    const myItems = getElementsFromLocalStorage();
+    myProductsTable = [];
+    myItems.forEach((element, index) => {
+      myProductsTable.push(element);
+      addElementToTbody(element.prodName, element.countProd, index + 1);
+    });
+  }
 
   myBtn.addEventListener("click", event => {
     event.preventDefault();
-    //pobieram wartosci z inputów
-    let productName = document.getElementById("nameProduct");
-    let countValue = document.getElementById("count");
-    //console.log(productName.value, countValue.value);
-    let prodName = productName.value;
-    let countProd = countValue.value;
-    // tutaj trzeba wrzucic if()!!!!
+    var prodName = productName.value;
+    var countProd = countValue.value;
 
-    let getItems = getElementsFromLocalStorage();
-    console.log("Elementy z localStorage: ", getItems);
-
-    //dodanie tr do tbody
-    addElementToTbody(prodName, countProd, getItems.length + 1);
-
-    //###
-    function addToTable(arr) {
-      arr.push({ prodName, countProd });
-      console.log(myProductsTable);
+    if (prodName == "" || countProd == "") {
+      isEmptyInput(prodName, countProd);
+      return;
     }
-    addToTable(myProductsTable);
+    if (!myEditProduct) {
+      myProductsTable.push({ prodName, countProd });
+    } else {
+      var i = myEditProduct;
+      myProductsTable[i].prodName = productName.value;
+      myProductsTable[i].countProd = countValue.value;
+      myEditProduct = null;
+    }
+
     saveToLocalStorage(myProductsTable);
-    //czyszczenie pola
+    showDataFromLocalStorage();
+
     function clearInput() {
       productName.value = "";
       countValue.value = "";
@@ -46,7 +50,6 @@ window.onload = function() {
   });
 
   function addElementToTbody(name, count, id) {
-    let tbody = document.getElementsByTagName("tbody")[0];
     let trow = document.createElement("tr");
     tbody.appendChild(trow);
     //pierwsza komorka
@@ -68,19 +71,27 @@ window.onload = function() {
     btnDelete.innerText = "usuń";
     btnDelete.addEventListener("click", removeItem);
     let btnEdit = document.createElement("button");
+    btnEdit.setAttribute("id", id - 1);
     btnEdit.innerText = "edytuj";
+    btnEdit.addEventListener("click", editItem);
     tdata3.appendChild(btnDelete);
     tdata3.appendChild(btnEdit);
     trow.appendChild(tdata3);
+
+    //edytowanie
+    function editItem(event) {
+      let idToEdit = parseInt(event.target.getAttribute("id"));
+      myEditProduct = idToEdit;
+      console.log("Edytuję element o indexie: ", myEditProduct);
+      let editItem = myProductsTable[myEditProduct];
+      productName.value = editItem.prodName;
+      countValue.value = editItem.countProd;
+    }
   }
 
   function saveToLocalStorage(items) {
     let products = JSON.stringify(items);
     localStorage.setItem(LOCAL_STORAGE_KEY, products);
-  }
-  function getId(arr) {
-    let number = arr.length + 1;
-    return number;
   }
 
   function getElementsFromLocalStorage() {
@@ -91,22 +102,28 @@ window.onload = function() {
     }
     return myItemArray;
   }
+
   function removeItem(event) {
-    let idToRemove = event.target.getAttribute("id");
-    myProductsTable.splice(idToRemove, 1);
-    console.log("zaczynam usuwanie elementu o id: ");
-    let tbody = document.getElementsByTagName("tbody")[0];
+    let idToRemove = parseInt(event.target.getAttribute("id"));
+    removeFromArray(myProductsTable, idToRemove);
+    console.log("zaczynam usuwanie elementu o id: ", idToRemove);
+    //usuwanie z localStorage
+    let idToRemoveFromLocal = idToRemove;
+    console.log("usuwam pozycje z localstorage: ", idToRemoveFromLocal);
+    saveToLocalStorage(myProductsTable);
+    showDataFromLocalStorage();
+  }
+
+  function clearTBody() {
     tbody.innerHTML = "";
-    myProductsTable.forEach((element, index) => {
-      addElementToTbody(element.prodName, element.countProd, index + 1);
-    });
+  }
+
+  function removeFromArray(arr, el) {
+    arr.splice(el, 1);
+  }
+
+  function isEmptyInput(prodValue, countValue) {
+    alert("Uzupełnij puste pola, aby dodać produkt");
+    return prodValue == "" || countValue == "";
   }
 };
-//funkcja edytowania pozycji napisac!!!
-
-//losowy numer ID
-//   function generId() {
-//     let count = Math.floor(Math.random() * 100);
-//     return count;
-
-// }
